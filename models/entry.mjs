@@ -1,24 +1,43 @@
 import mongoose from 'mongoose';
 
 const entrySchema = new mongoose.Schema({
-    user: String,
-    label: String,
-    startDate: {
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+    },
+    text: {
+        type: String,
+        required: true,
+        default: 'New Event'
+    },
+    start: {
         type: Date,
         required: true,
         default: Date.now
     },
-    startTime: {
-        type: String
+    end: {
+        type: Date,
+        required: true,
+        default: Date.now
     },
-    duration: {
-        type: Number
-    }
+    category: String,
+    participants: Number
 } , {
     timestamps: true
 })
 
-// indexes
-entrySchema.index({ startDate: 1});
+
+// ===================================================================================
+//              indexes
+// ===================================================================================
+entrySchema.index({ start: 1});
+
+// ===================================================================================
+//              virtuals
+// ===================================================================================
+entrySchema.virtual('duration').get(function () {
+    return this.end - this.start;
+})
 
 export default mongoose.model("Entry", entrySchema);
